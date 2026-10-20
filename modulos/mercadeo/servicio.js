@@ -6,39 +6,39 @@
  */
 
 (function () {
-    // Base de datos simulada de cuentas de fidelización
-    const cuentasFidelizacion = [
+    const INICIALES = [
         { id: 1, usuarioId: 101, puntos: 250, nivel: 'Bronce' },
         { id: 2, usuarioId: 102, puntos: 600, nivel: 'Plata' },
         { id: 3, usuarioId: 103, puntos: 1200, nivel: 'Oro' }
     ];
 
+    const getCuentas = () => JSON.parse(localStorage.getItem('sazon_cuentas')) || INICIALES;
+    const saveCuentas = (data) => localStorage.setItem('sazon_cuentas', JSON.stringify(data));
+    const getNivel = (pts) => pts >= 1000 ? 'Oro' : pts >= 500 ? 'Plata' : 'Bronce';
+
     window.mercadeoServicio = {
-        // Función base del módulo
-        async listarTodos() {
-            return Promise.resolve(cuentasFidelizacion);
-        },
-
-        // Funcionalidades HU-01 (Andrés David)
-        async consultarCuentaPorUsuario(usuarioId) {
-            const cuenta = cuentasFidelizacion.find(c => c.usuarioId === usuarioId);
-            return Promise.resolve(cuenta || null);
-        },
-
-        async acumularPuntos(usuarioId, cantidad) {
-            let cuenta = cuentasFidelizacion.find(c => c.usuarioId === usuarioId);
-            if (!cuenta) {
-                cuenta = { id: cuentasFidelizacion.length + 1, usuarioId, puntos: 0, nivel: 'Bronce' };
-                cuentasFidelizacion.push(cuenta);
-            }
-            cuenta.puntos += cantidad;
+        listarTodos: async () => getCuentas(),
+        consultarCuentaPorUsuario: async (id) => getCuentas().find(c => c.usuarioId === id) || null,
+        acumularPuntos: async (id, cantidad) => {
+            let cuentas = getCuentas();
+            let c = cuentas.find(x => x.usuarioId === id) || { id: cuentas.length + 1, usuarioId: id, puntos: 0 };
+            if (!cuentas.includes(c)) cuentas.push(c);
             
-            // Regla de negocio para actualización de nivel
-            if (cuenta.puntos >= 1000) cuenta.nivel = 'Oro';
-            else if (cuenta.puntos >= 500) cuenta.nivel = 'Plata';
-            else cuenta.nivel = 'Bronce';
+            c.puntos += cantidad;
+            c.nivel = getNivel(c.puntos);
+            saveCuentas(cuentas);
+            return c;
+        },
+        redimirPuntos: async (id, cantidad) => {
+            let cuentas = getCuentas();
+            let c = cuentas.find(x => x.usuarioId === id);
+            if (!c) return { exito: false, mensaje: 'Cuenta no encontrada' };
+            if (c.puntos < cantidad) return { exito: false, mensaje: 'Puntos insuficientes' };
 
-            return Promise.resolve(cuenta);
+            c.puntos -= cantidad;
+            c.nivel = getNivel(c.puntos);
+            saveCuentas(cuentas);
+            return { exito: true, cuenta: c };
         }
     };
 })();
