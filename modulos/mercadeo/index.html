@@ -1,24 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sazón · Mercadeo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sazón • Catálogo de Recompensas</title>
   <link rel="stylesheet" href="../../assets/css/sazon.css">
 </head>
+
 <body>
   <header data-layout="header"></header>
+
   <main class="contenedor pagina-modulo">
     <section class="bloque-modulo">
       <h1>Módulo Mercadeo</h1>
-      <p>Base lista para desarrollar historias de usuario de mercadeo.</p>
-      <div id="mercadeo-estado" class="mensaje-estado" role="status"></div>
+      <p>Catálogo de recompensas disponibles</p>
+
+      <div id="mercadeo-estado" class="mensaje-estado" role="alert"></div>
+
+      <div id="catalogo-contenedor"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 20px;">
+      </div>
     </section>
   </main>
+
   <footer data-layout="footer"></footer>
+
   <script src="../../services/api.config.js"></script>
   <script src="../../assets/js/layout.js"></script>
   <script src="servicio.js"></script>
   <script src="index.js"></script>
 </body>
+
 </html>
